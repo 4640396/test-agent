@@ -1,0 +1,52 @@
+// CIMDEV Test Agent 门禁示例（需安装 HTTP Request 插件）
+// 触发方式：构建后执行（Post build）或阶段门禁；TEST_AGENT_TOKEN 用 Jenkins 凭据。
+pipeline {
+  agent any
+  environment {
+    TEST_AGENT_URL = 'http://127.0.0.1:18088'
+    TEST_AGENT_TOKEN = credentials('test-agent-token')
+    PROJECT_PATH = "${WORKSPACE}"
+    SYSTEM_NAME = env.JOB_BASE_NAME
+  }
+  stages {
+    stage('Run Test Agent') {
+      steps {
+        script {
+          def create = httpRequest(
+            contentType: 'APPLICATION_JSON',
+            httpMode: 'POST',
+            url: "${TEST_AGENT_URL}/api/tasks",
+            requestBody: """{"input":{"projectPath":"${PROJECT_PATH}","systemName":"${SYSTEM_NAME}","version":"${env.BUILD_TAG}","testTypes":["unit","regression","ui"],"requiredCapabilities":["java","node","playwright"],"coverageTarget":60}}""",
+            customHeaders: [[name: 'Authorization', value: "Bearer ${TEST_AGENT_TOKEN}"]]
+          )
+          def taskId = new groovy.json.JsonSlurper().parseText(create.content).id
+          echo "TEST_AGENT_TASK=${taskId}"
+
+          def task = null
+          for (int i = 0; i < 120; i++) {
+            sleep 10
+            def resp = httpRequest(
+              url: "${TEST_AGENT_URL}/api/tasks/${taskId}",
+              customHeaders: [[name: 'Authorization', value: "Bearer ${TEST_AGENT_TOKEN}"]]
+            )
+            task = new groovy.json.JsonSlurper().parseText(resp.content)
+            if (task.status in ['COMPLETED', 'FAILED', 'NEEDS_REVIEW', 'CANCELLED']) break
+          }
+
+          if (task.status != 'COMPLETED') error("Test Agent 任务未通过：${task.status} ${task.errorMessage}")
+          def gate = task.report?.gate
+          if (gate && !gate.passed) error("覆盖率门禁未通过：${gate.reason}")
+          echo "TEST_AGENT_PASSED=1 task=${taskId} coverage=${task.report?.coverage}"
+
+          writeFile file: 'test-agent-report.xml', text: httpRequest(
+            url: "${TEST_AGENT_URL}/api/tasks/${taskId}/report?format=junit",
+            customHeaders: [[name: 'Authorization', value: "Bearer ${TEST_AGENT_TOKEN}"]]
+          ).content
+        }
+      }
+    }
+    stage('Publish JUnit') {
+      steps { junit 'test-agent-report.xml' }
+    }
+  }
+}

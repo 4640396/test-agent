@@ -1,0 +1,23 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext"
+	},
+	"include": ["src/**/*.ts"],
+	"exclude": [
+		"node_modules",
+		"dist",
+		"**/*.d.ts",
+		"src/**/*.d.ts",
+		"src/providers/*.models.ts",
+		"src/models.generated.ts",
+		"src/providers/all.ts",
+		"src/compat.ts",
+		"src/cli.ts",
+		"src/bun-oauth.ts",
+		"src/auth/oauth/github-copilot.ts"
+	]
+}

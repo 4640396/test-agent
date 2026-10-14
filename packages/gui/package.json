@@ -1,0 +1,23 @@
+{
+  "name": "@cxmt/gui",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Test Agent Electron desktop GUI",
+  "type": "module",
+  "main": "../../out/main/index.js",
+  "scripts": {
+    "typecheck": "vue-tsc --noEmit -p src/renderer/tsconfig.json && tsc --noEmit -p src/main/tsconfig.json && tsc --noEmit -p src/preload/tsconfig.json"
+  },
+  "dependencies": {
+    "@cxmt/protocol": "^0.1.0",
+    "@cxmt/test-agent": "^0.1.0",
+    "electron": "^43.2.0",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "electron-vite": "^3.1.0",
+    "vite": "^6.1.0",
+    "vue-tsc": "^2.2.4"
+  }
+}

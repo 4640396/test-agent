@@ -1,0 +1,16 @@
+# 构建上下文为仓库根目录（cimdev-test-agent）
+FROM maven:3.9-eclipse-temurin-17 AS build
+WORKDIR /app
+COPY services/control-server/pom.xml .
+RUN mvn -B -q dependency:go-offline
+COPY services/control-server/src ./src
+RUN mvn -B -q package -DskipTests
+
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+COPY --from=build /app/target/test-agent-server-*.jar app.jar
+RUN groupadd --system testagent && useradd --system --gid testagent --home-dir /app --no-create-home testagent \
+    && chown testagent:testagent /app/app.jar
+USER testagent
+EXPOSE 8088
+ENTRYPOINT ["java", "-jar", "app.jar"]

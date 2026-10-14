@@ -1,0 +1,45 @@
+{
+  "name": "@cxmt/agent-core",
+  "version": "0.84.2",
+  "description": "Vendored pi-agent-core (MIT, Copyright (c) 2025 Mario Zechner) — general-purpose agent runtime with agentLoop, AgentTool, and harness abstractions",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js"
+    },
+    "./session/testing": {
+      "types": "./dist/harness/session/testing/index.d.ts",
+      "import": "./dist/harness/session/testing/index.js"
+    }
+  },
+  "files": ["dist", "LICENSE"],
+  "scripts": {
+    "clean": "shx rm -rf dist",
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest --run",
+    "prepublishOnly": "npm run build"
+  },
+  "engines": { "node": ">=22.19.0" },
+  "dependencies": {
+    "@cxmt/ai": "^0.84.2",
+    "@cxmt/telemetry": "^0.84.2",
+    "diff": "8.0.4",
+    "ignore": "7.0.5",
+    "typebox": "1.3.7",
+    "yaml": "2.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "typescript": "5.9.3",
+    "vitest": "^3.0.7"
+  }
+}

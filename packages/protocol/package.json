@@ -1,0 +1,30 @@
+{
+  "name": "@cxmt/protocol",
+  "version": "0.1.0",
+  "description": "Transport-neutral protocol for test-agent sessions (gui ↔ host-mode ↔ worker-mode)",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./local-host-protocol": {
+      "types": "./dist/local-host-protocol.d.ts",
+      "import": "./dist/local-host-protocol.js"
+    }
+  },
+  "files": ["dist", "LICENSE"],
+  "scripts": {
+    "clean": "shx rm -rf dist",
+    "build": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "typescript": "5.9.3"
+  }
+}

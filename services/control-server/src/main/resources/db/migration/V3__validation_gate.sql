@@ -1,0 +1,1 @@
+ALTER TABLE test_tasks ADD COLUMN stage VARCHAR(32) NULL;

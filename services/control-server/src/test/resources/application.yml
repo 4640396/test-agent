@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testagent;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ''
+  flyway:
+    enabled: true
+test-agent:
+  api-token: test-token
+  role-tokens: admin=admin-token;operator=operator-token;viewer=viewer-token;worker=worker-token
+  storage-root: ${java.io.tmpdir}/cimdev-test-agent-test
+  task-lease-seconds: 60
+  scheduler-delay-ms: 3600000
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: readinessState,runtimeReadiness,db

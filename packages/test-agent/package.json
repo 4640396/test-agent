@@ -1,0 +1,46 @@
+{
+  "name": "@cxmt/test-agent",
+  "version": "0.1.0",
+  "description": "CIMDEV TestAgent product package — headless test-generation agent with worker-mode execution and AgentTool-based test tools",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./worker-cli": {
+      "types": "./dist/worker-cli.d.ts",
+      "import": "./dist/worker-cli.js"
+    },
+    "./host-cli": {
+      "types": "./dist/host-cli.d.ts",
+      "import": "./dist/host-cli.js"
+    }
+  },
+  "files": ["dist", "LICENSE"],
+  "scripts": {
+    "clean": "shx rm -rf dist",
+    "build": "tsc -p tsconfig.build.json && shx mkdir -p dist/resources && shx cp src/resources/*.java dist/resources/",
+    "test": "vitest --run",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "engines": { "node": ">=22.19.0" },
+  "dependencies": {
+    "@cxmt/agent-core": "^0.84.2",
+    "@cxmt/ai": "^0.84.2",
+    "@cxmt/protocol": "^0.1.0",
+    "@cxmt/sub": "^0.1.0",
+    "@cxmt/telemetry": "^0.84.2",
+    "@playwright/test": "^1.40.0",
+    "typebox": "1.3.7"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "typescript": "5.9.3",
+    "vitest": "^3.0.7"
+  }
+}

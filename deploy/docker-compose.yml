@@ -1,0 +1,44 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD is required}
+      MYSQL_DATABASE: cimdev_test_agent
+      MYSQL_USER: test_agent
+      MYSQL_PASSWORD: ${TEST_AGENT_MYSQL_PASSWORD:?TEST_AGENT_MYSQL_PASSWORD is required}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -utest_agent -p$$MYSQL_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  control-server:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.server
+    environment:
+      TEST_AGENT_MYSQL_URL: jdbc:mysql://mysql:3306/cimdev_test_agent?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+      TEST_AGENT_MYSQL_USER: test_agent
+      TEST_AGENT_MYSQL_PASSWORD: ${TEST_AGENT_MYSQL_PASSWORD:?TEST_AGENT_MYSQL_PASSWORD is required}
+      TEST_AGENT_ROLE_TOKENS: ${TEST_AGENT_ROLE_TOKENS:?TEST_AGENT_ROLE_TOKENS is required}
+      TEST_AGENT_STORAGE_ROOT: /data/artifacts
+      TEST_AGENT_SERVER_HOST: 0.0.0.0
+    ports:
+      - "18088:8088"
+    volumes:
+      - artifacts-data:/data/artifacts
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,noexec,nosuid,nodev
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 256
+    depends_on:
+      mysql:
+        condition: service_healthy
+volumes:
+  mysql-data:
+  artifacts-data:

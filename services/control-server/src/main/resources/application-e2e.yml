@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    url: jdbc:h2:file:${TEST_AGENT_E2E_DB:./data/e2e-db};MODE=MySQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE
+    username: sa
+    password: ''
+test-agent:
+  api-token: ${TEST_AGENT_API_TOKEN:e2e-token}
+  storage-root: ${TEST_AGENT_STORAGE_ROOT:./data/e2e-artifacts}
